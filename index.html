@@ -118,6 +118,40 @@
         </div>
     </div>
 </div>
+<script>
+    // وظيفة تصدير البيانات إلى ملف JSON (جاهز للرفع على جيت هب)
+    document.querySelector('.btn-save').onclick = function() {
+        const data = {
+            title: document.querySelector('input[placeholder="العنوان الكامل..."]').value,
+            author: document.querySelectorAll('input')[1].value,
+            supervisor: document.querySelectorAll('input')[2].value,
+            university: document.querySelector('select').value,
+            year: document.querySelector('input[type="number"]').value,
+            id: document.querySelectorAll('input')[4].value,
+            status: document.querySelectorAll('select')[2].value
+        };
+        
+        if(!data.title) return alert("يرجى إدخال العنوان على الأقل");
 
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `thesis-${data.id || Date.now()}.json`;
+        a.click();
+        alert("تم تجهيز ملف الرسالة. قم برفعه إلى مجلد الجامعة في GitHub");
+    };
+
+    // وظيفة البحث السريع في الجدول
+    document.querySelector('.search-bar input').onkeyup = function() {
+        let filter = this.value.toUpperCase();
+        let trs = document.querySelectorAll(".dense-table tbody tr");
+        
+        trs.forEach(tr => {
+            let text = tr.textContent.toUpperCase();
+            tr.style.display = text.includes(filter) ? "" : "none";
+        });
+    };
+</script>
 </body>
 </html>
