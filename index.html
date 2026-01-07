@@ -3,39 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الفهرس الليبي الموحد | LTP</title>
+    <title>بوابة الرسائل الجامعية الليبية | Libyan Theses Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #1a2a3a; --accent: #3498db; --success: #27ae60; --light: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e9ecef; margin: 0; padding: 5px; font-size: 12px; color: #333; overflow: hidden; }
-        .dashboard { max-width: 1400px; margin: auto; background: white; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); height: 98vh; display: flex; flex-direction: column; }
-        
-        header { background: var(--primary); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); }
-        header h1 { margin: 0; font-size: 1rem; }
-        .lang-en { font-family: Arial; font-size: 0.8rem; opacity: 0.8; margin-right: 10px; border-right: 1px solid #555; padding-right: 10px; }
-
-        .entry-section { padding: 8px; background: var(--light); border-bottom: 1px solid #ddd; }
-        .grid-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e9ecef; margin: 0; padding: 5px; font-size: 12px; color: #333; }
+        .dashboard { max-width: 1300px; margin: auto; background: white; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); height: 98vh; display: flex; flex-direction: column; }
+        header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); }
+        header h1 { margin: 0; font-size: 1.1rem; }
+        .lang-en { font-family: Arial; font-size: 0.9rem; opacity: 0.9; margin-right: 10px; border-right: 1px solid #555; padding-right: 10px; }
+        .entry-section { padding: 10px; background: var(--light); border-bottom: 1px solid #ddd; }
+        .grid-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
         .triple { grid-column: span 3; }
         .double { grid-column: span 2; }
-        
-        input, select { padding: 3px 8px; border: 1px solid #bbb; border-radius: 3px; width: 100%; box-sizing: border-box; font-size: 11px; height: 26px; }
-        label { display: block; margin-bottom: 1px; font-weight: 600; font-size: 10px; color: #555; }
-
-        .btn-group { display: flex; gap: 5px; justify-content: flex-end; align-items: flex-end; }
-        button { padding: 4px 12px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; height: 26px; }
+        input, select { padding: 4px 8px; border: 1px solid #bbb; border-radius: 3px; width: 100%; box-sizing: border-box; font-size: 12px; height: 28px; }
+        label { display: block; margin-bottom: 1px; font-weight: 600; font-size: 11px; color: #444; }
+        .btn-group { margin-top: 8px; display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
+        button { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; }
         .btn-save { background: var(--success); color: white; }
         .btn-export { background: #6c757d; color: white; }
-
-        .search-section { padding: 8px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .search-bar { margin-bottom: 5px; display: flex; gap: 5px; background: #eee; padding: 4px; border-radius: 3px; }
-        
-        .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; background: white; }
-        .dense-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
-        .dense-table th { background: #f1f1f1; padding: 5px; text-align: right; border: 1px solid #ddd; position: sticky; top: 0; z-index: 10; }
-        .dense-table td { padding: 3px 6px; border: 1px solid #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dense-table tr:hover { background: #f1f7fd; }
-        
-        .status-badge { padding: 1px 4px; border-radius: 3px; font-size: 9px; color: white; }
+        .btn-excel { background: #217346; color: white; }
+        .search-section { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .search-bar { margin-bottom: 8px; display: flex; gap: 8px; background: #eee; padding: 6px; border-radius: 4px; }
+        .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; }
+        .dense-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        .dense-table th { background: #f1f1f1; padding: 6px; text-align: right; border: 1px solid #ddd; position: sticky; top: 0; z-index: 10; }
+        .dense-table td { padding: 4px 6px; border: 1px solid #eee; }
+        .status-badge { padding: 1px 5px; border-radius: 4px; font-size: 9px; color: white; font-weight: bold; }
         .available { background: var(--success); }
     </style>
 </head>
@@ -43,123 +37,145 @@
 
 <div class="dashboard">
     <header>
-        <h1>بوابة الرسائل الجامعية الليبية <span class="lang-en">Libyan Theses Portal</span></h1>
-        <div style="font-size: 9px;">الفهرس الليبي الموحد v1.0</div>
+        <h1><span>بوابة الرسائل الجامعية الليبية</span> <span class="lang-en">Libyan Theses Portal (LTP)</span></h1>
+        <div style="font-size: 10px;">الفهرس الليبي الموحد v1.0</div>
     </header>
 
     <div class="entry-section">
         <div class="grid-container">
-            <div class="triple"><label>عنوان الرسالة</label><input type="text" id="in-title" placeholder="العنوان الكامل..."></div>
-            <div class="double"><label>الباحث</label><input type="text" id="in-author"></div>
-            <div><label>السنة</label><input type="number" id="in-year" value="2026"></div>
+            <div class="triple"><label>عنوان الرسالة</label><input type="text" id="field-title" placeholder="العنوان الكامل..."></div>
+            <div class="double"><label>الباحث</label><input type="text" id="field-author"></div>
+            <div class="double"><label>المشرف العلمي</label><input type="text" id="field-supervisor"></div>
             
-            <div class="double"><label>المشرف</label><input type="text" id="in-supervisor"></div>
             <div><label>الجامعة</label>
-                <select id="in-uni">
-                    <option>جامعة طرابلس</option>
-                    <option>جامعة بنغازي</option>
-                    <option>جامعة سبها</option>
-                    <option>جامعة الزاوية</option>
-                    <option>جامعة مصراتة</option>
+                <select id="field-uni">
+                    <option>جامعة طرابلس</option><option>جامعة بنغازي</option><option>جامعة سبها</option><option>جامعة الزاوية</option><option>جامعة مصراتة</option>
                 </select>
             </div>
-            <div><label>الدرجة</label><select id="in-degree"><option>ماجستير</option><option>دكتوراه</option></select></div>
-            <div><label>رقم الرسالة</label><input type="text" id="in-id"></div>
-            <div class="double btn-group">
-                <button class="btn-export" onclick="window.location.reload()">تحديث الفهرس</button>
-                <button class="btn-save" id="mainSaveBtn">حفظ في الفهرس</button>
+            <div><label>الكلية/القسم</label><input type="text" id="field-dept"></div>
+            <div><label>السنة</label><input type="number" id="field-year" value="2026"></div>
+            <div><label>رقم الرسالة</label><input type="text" id="field-id"></div>
+            <div><label>الدرجة</label><select id="field-degree"><option>ماجستير</option><option>دكتوراه</option></select></div>
+            <div><label>الحالة</label><select id="field-status"><option>متوفرة</option><option>غير متوفرة</option></select></div>
+            
+            <div class="triple"><label>رابط المستخلص أو الرسالة (URL)</label><input type="url" id="field-url" placeholder="https://..."></div>
+            <div class="triple btn-group">
+                <button class="btn-excel" id="excelBtn">استيراد Excel</button>
+                <button class="btn-export" onclick="window.location.reload()">تحديث البيانات</button>
+                <button class="btn-save" id="saveBtn">حفظ في الفهرس</button>
             </div>
         </div>
     </div>
 
     <div class="search-section">
         <div class="search-bar">
-            <input type="text" id="mainSearch" style="flex: 3" placeholder="بحث سريع بالعنوان أو الباحث...">
-            <input type="text" style="flex: 1" placeholder="تصفية بالجامعة...">
+            <input type="text" id="searchInput" style="flex-grow: 2" placeholder="بحث سريع بالعنوان، الباحث، المشرف...">
+            <select style="flex-grow: 1"><option>تصفية حسب الجامعة</option></select>
         </div>
-        
         <div class="table-wrapper">
             <table class="dense-table">
                 <thead>
                     <tr>
-                        <th width="40px">#</th>
-                        <th>العنوان</th>
-                        <th width="150px">الباحث / المشرف</th>
-                        <th width="120px">الجامعة</th>
-                        <th width="60px">السنة</th>
-                        <th width="80px">الحالة</th>
+                        <th width="5%">رقم</th>
+                        <th width="35%">العنوان</th>
+                        <th width="20%">الباحث / المشرف</th>
+                        <th width="15%">الجامعة / القسم</th>
+                        <th width="10%">السنة</th>
+                        <th width="15%">الحالة</th>
                     </tr>
                 </thead>
-                <tbody id="results-body">
-                    </tbody>
+                <tbody id="results-body"></tbody>
             </table>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. وظيفة حفظ البيانات (تنزيل ملف JSON)
-    document.getElementById('mainSaveBtn').onclick = function() {
+    // 1. وظيفة الحفظ اليدوي (بكامل البيانات)
+    document.getElementById('saveBtn').onclick = function() {
         const data = {
-            title: document.getElementById('in-title').value,
-            author: document.getElementById('in-author').value,
-            supervisor: document.getElementById('in-supervisor').value,
-            university: document.getElementById('in-uni').value,
-            year: document.getElementById('in-year').value,
-            id: document.getElementById('in-id').value,
-            degree: document.getElementById('in-degree').value,
-            status: "متوفرة"
+            title: document.getElementById('field-title').value,
+            author: document.getElementById('field-author').value,
+            supervisor: document.getElementById('field-supervisor').value,
+            university: document.getElementById('field-uni').value,
+            dept: document.getElementById('field-dept').value, // الكلية والقسم
+            year: document.getElementById('field-year').value,
+            id: document.getElementById('field-id').value,
+            degree: document.getElementById('field-degree').value,
+            status: document.getElementById('field-status').value,
+            url: document.getElementById('field-url').value
         };
 
-        if(!data.title || !data.author) {
-            alert("الرجاء إدخال العنوان واسم الباحث");
-            return;
-        }
+        if(!data.title || !data.author) { alert("يرجى إدخال العنوان واسم الباحث"); return; }
 
         const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `thesis-${data.id || Date.now()}.json`;
         a.click();
-        alert("تم تحميل الملف بنجاح! قم برفعه الآن لمجلد data في GitHub.");
     };
 
-    // 2. جلب البيانات وعرضها في الجدول
-    async function loadData() {
-        const tbody = document.getElementById('results-body');
+    // 2. وظيفة استيراد الإكسل
+    document.getElementById('excelBtn').onclick = function() {
+        const input = document.createElement('input');
+        input.type = 'file'; input.accept = '.xlsx, .xls';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(ex) {
+                const workbook = XLSX.read(new Uint8Array(ex.target.result), {type: 'array'});
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(sheet);
+                
+                const formatted = jsonData.map(row => ({
+                    title: row['العنوان'], author: row['الباحث'], supervisor: row['المشرف'] || '',
+                    university: row['الجامعة'], dept: row['الكلية'] || row['القسم'] || '',
+                    year: row['السنة'], id: row['رقم الرسالة'] || Date.now(),
+                    status: "متوفرة", degree: row['الدرجة'] || 'ماجستير'
+                }));
+
+                const blob = new Blob([JSON.stringify(formatted, null, 2)], {type: 'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `bulk-data.json`;
+                a.click();
+                alert("تم تحويل بيانات الإكسل! ارفع الملف الناتج لـ GitHub.");
+            };
+            reader.readAsArrayBuffer(file);
+        };
+        input.click();
+    };
+
+    // 3. جلب البيانات وعرضها
+    async function loadTable() {
         try {
-            const response = await fetch('data/master_index.json');
-            if (!response.ok) throw new Error();
-            const items = await response.json();
-            
-            tbody.innerHTML = ''; 
-            items.forEach((item, index) => {
-                if(!item.title) return;
-                const row = `
+            const res = await fetch('data/master_index.json');
+            if(!res.ok) return;
+            const items = await res.json();
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = '';
+            items.forEach((item, idx) => {
+                tbody.insertAdjacentHTML('beforeend', `
                     <tr>
-                        <td style="text-align:center">${index + 1}</td>
-                        <td title="${item.title}" style="font-weight:bold">${item.title}</td>
-                        <td title="${item.author}">${item.author} <br><small>${item.supervisor || ''}</small></td>
-                        <td>${item.university}</td>
-                        <td style="text-align:center">${item.year}</td>
-                        <td style="text-align:center"><span class="status-badge available">متوفرة</span></td>
-                    </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
+                        <td>${idx + 1}</td>
+                        <td style="font-weight:bold">${item.title}</td>
+                        <td>${item.author} <br><small>${item.supervisor || ''}</small></td>
+                        <td>${item.university} <br><small>${item.dept || ''}</small></td>
+                        <td>${item.year}</td>
+                        <td><span class="status-badge available">${item.status}</span></td>
+                    </tr>`);
             });
-        } catch (e) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">في انتظار رفع البيانات...</td></tr>';
-        }
+        } catch(e) {}
     }
 
-    // 3. البحث الحي
-    document.getElementById('mainSearch').onkeyup = function() {
+    document.getElementById('searchInput').onkeyup = function() {
         let val = this.value.toLowerCase();
         document.querySelectorAll('#results-body tr').forEach(tr => {
             tr.style.display = tr.innerText.toLowerCase().includes(val) ? '' : 'none';
         });
     };
 
-    window.onload = loadData;
+    window.onload = loadTable;
 </script>
 </body>
 </html>
