@@ -92,7 +92,7 @@
             <select style="flex-grow: 1"><option>تصفية حسب السنة</option></select>
         </div>
         
-        <div class="table-wrapper">
+<div class="table-wrapper">
             <table class="dense-table">
                 <thead>
                     <tr>
@@ -104,21 +104,58 @@
                         <th width="15%">الحالة والروابط</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>LTP-01</td>
-                        <td>دراسة تحليلية للبيانات الجامعية في ليبيا</td>
-                        <td>أحمد محمد / د. سالم علي</td>
-                        <td>جامعة طرابلس</td>
-                        <td>2025</td>
-                        <td><span class="status-badge available">متوفرة</span> 🔗</td>
-                    </tr>
-                </tbody>
+                <tbody id="results-body">
+                    </tbody>
             </table>
         </div>
     </div>
 </div>
+
 <script>
+    // 1. وظيفة جلب البيانات من ملف الفهرس الموحد
+    async function loadData() {
+        try {
+            // نقوم بجلب الملف الذي يصنعه الـ GitHub Action تلقائياً
+            const response = await fetch('data/master_index.json');
+            if (!response.ok) return; // إذا لم يوجد بيانات بعد، لا تفعل شيئاً
+            const items = await response.json();
+            
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = ''; // تنظيف الجدول من أي بيانات قديمة
+            
+            items.forEach((item, index) => {
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td style="font-weight:bold">${item.title}</td>
+                        <td>${item.author} / ${item.supervisor}</td>
+                        <td>${item.university}</td>
+                        <td>${item.year}</td>
+                        <td>
+                            <span class="status-badge ${item.status === 'متوفرة' ? 'available' : 'not-available'}">
+                                ${item.status}
+                            </span>
+                        </td>
+                    </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        } catch (e) {
+            console.log("في انتظار البيانات...");
+        }
+    }
+
+    // 2. تفعيل البحث الحي في الجدول
+    document.querySelector('.search-bar input').onkeyup = function() {
+        let filter = this.value.toUpperCase();
+        let trs = document.querySelectorAll("#results-body tr");
+        trs.forEach(tr => {
+            tr.style.display = tr.textContent.toUpperCase().includes(filter) ? "" : "none";
+        });
+    };
+
+    // تشغيل الجلب عند فتح الصفحة
+    window.onload = loadData;
+</script>
     // 1. جلب البيانات الحقيقية من المستودع عند فتح الصفحة
     async function loadTheses() {
         try {
