@@ -3,179 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة الرسائل الجامعية الليبية | Libyan Theses Portal</title>
+    <title>بوابة الرسائل الجامعية الليبية | LTP</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #1a2a3a; --accent: #3498db; --success: #27ae60; --light: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e9ecef; margin: 0; padding: 5px; font-size: 12px; color: #333; }
-        .dashboard { max-width: 1300px; margin: auto; background: white; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); height: 98vh; display: flex; flex-direction: column; }
+        :root { --primary: #1a2a3a; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e9ecef; margin: 0; padding: 5px; font-size: 12px; }
+        .dashboard { max-width: 1350px; margin: auto; background: white; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); height: 98vh; display: flex; flex-direction: column; }
         header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); }
-        header h1 { margin: 0; font-size: 1.1rem; }
-        .lang-en { font-family: Arial; font-size: 0.9rem; opacity: 0.9; margin-right: 10px; border-right: 1px solid #555; padding-right: 10px; }
         .entry-section { padding: 10px; background: var(--light); border-bottom: 1px solid #ddd; }
         .grid-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-        .triple { grid-column: span 3; }
-        .double { grid-column: span 2; }
-        input, select { padding: 4px 8px; border: 1px solid #bbb; border-radius: 3px; width: 100%; box-sizing: border-box; font-size: 12px; height: 28px; }
+        .triple { grid-column: span 3; } .double { grid-column: span 2; }
+        input, select { padding: 4px 8px; border: 1px solid #bbb; border-radius: 3px; width: 100%; font-size: 12px; height: 28px; }
         label { display: block; margin-bottom: 1px; font-weight: 600; font-size: 11px; color: #444; }
-        .btn-group { margin-top: 8px; display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
-        button { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; }
-        .btn-save { background: var(--success); color: white; }
-        .btn-export { background: #6c757d; color: white; }
-        .btn-excel { background: #217346; color: white; }
-        .search-section { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .search-bar { margin-bottom: 8px; display: flex; gap: 8px; background: #eee; padding: 6px; border-radius: 4px; }
-        .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; }
+        .btn-group { margin-top: 8px; display: flex; gap: 6px; justify-content: flex-end; }
+        button { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; color: white; }
+        .btn-save { background: var(--success); }
+        .btn-excel { background: #217346; }
+        .btn-update { background: #6c757d; }
+        .table-wrapper { flex-grow: 1; overflow-y: auto; padding: 10px; }
         .dense-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
-        .dense-table th { background: #f1f1f1; padding: 6px; text-align: right; border: 1px solid #ddd; position: sticky; top: 0; z-index: 10; }
+        .dense-table th { background: #f1f1f1; padding: 6px; text-align: right; border: 1px solid #ddd; position: sticky; top: 0; }
         .dense-table td { padding: 4px 6px; border: 1px solid #eee; }
-        .status-badge { padding: 1px 5px; border-radius: 4px; font-size: 9px; color: white; font-weight: bold; }
-        .available { background: var(--success); }
+        .badge { padding: 2px 6px; border-radius: 4px; color: white; font-size: 10px; font-weight: bold; }
+        .bg-available { background: var(--success); }
+        .bg-unavailable { background: var(--danger); }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
     <header>
-        <h1><span>بوابة الرسائل الجامعية الليبية</span> <span class="lang-en">Libyan Theses Portal (LTP)</span></h1>
-        <div style="font-size: 10px;">الفهرس الليبي الموحد v1.0</div>
+        <h1>بوابة الرسائل الجامعية الليبية | <small>الفهرس الليبي الموحد</small></h1>
+        <div style="font-size: 10px;">الإصدار 1.0</div>
     </header>
 
     <div class="entry-section">
         <div class="grid-container">
-            <div class="triple"><label>عنوان الرسالة</label><input type="text" id="field-title" placeholder="العنوان الكامل..."></div>
-            <div class="double"><label>الباحث</label><input type="text" id="field-author"></div>
-            <div class="double"><label>المشرف العلمي</label><input type="text" id="field-supervisor"></div>
+            <div class="triple"><label>عنوان الرسالة</label><input type="text" id="f-title" placeholder="العنوان الكامل..."></div>
+            <div class="double"><label>الباحث</label><input type="text" id="f-author"></div>
+            <div><label>المشرف العلمي</label><input type="text" id="f-supervisor"></div>
             
-            <div><label>الجامعة</label>
-                <select id="field-uni">
-                    <option>جامعة طرابلس</option><option>جامعة بنغازي</option><option>جامعة سبها</option><option>جامعة الزاوية</option><option>جامعة مصراتة</option>
-                </select>
-            </div>
-            <div><label>الكلية/القسم</label><input type="text" id="field-dept"></div>
-            <div><label>السنة</label><input type="number" id="field-year" value="2026"></div>
-            <div><label>رقم الرسالة</label><input type="text" id="field-id"></div>
-            <div><label>الدرجة</label><select id="field-degree"><option>ماجستير</option><option>دكتوراه</option></select></div>
-            <div><label>الحالة</label><select id="field-status"><option>متوفرة</option><option>غير متوفرة</option></select></div>
+            <div><label>الجامعة</label><select id="f-uni"><option>جامعة طرابلس</option><option>جامعة بنغازي</option><option>جامعة سبها</option><option>جامعة الزاوية</option><option>جامعة مصراتة</option></select></div>
+            <div><label>الكلية/القسم</label><input type="text" id="f-dept"></div>
+            <div><label>السنة</label><input type="number" id="f-year" value="2026"></div>
+            <div><label>رقم الرسالة</label><input type="text" id="f-id"></div>
+            <div><label>الدرجة</label><select id="f-degree"><option>ماجستير</option><option>دكتوراه</option></select></div>
+            <div><label>الحالة (التوفر)</label><select id="f-status"><option value="متوفرة">متوفرة</option><option value="غير متوفرة">غير متوفرة</option></select></div>
             
-            <div class="triple"><label>رابط المستخلص أو الرسالة (URL)</label><input type="url" id="field-url" placeholder="https://..."></div>
+            <div class="triple"><label>رابط الرسالة (URL)</label><input type="url" id="f-url" placeholder="https://..."></div>
             <div class="triple btn-group">
-                <button class="btn-excel" id="excelBtn">استيراد Excel</button>
-                <button class="btn-export" onclick="window.location.reload()">تحديث البيانات</button>
-                <button class="btn-save" id="saveBtn">حفظ في الفهرس</button>
+                <button class="btn-excel" id="btnExcel">استيراد Excel</button>
+                <button class="btn-update" onclick="window.location.reload()">تحديث</button>
+                <button class="btn-save" id="btnSave">حفظ في الفهرس</button>
             </div>
         </div>
     </div>
 
-    <div class="search-section">
-        <div class="search-bar">
-            <input type="text" id="searchInput" style="flex-grow: 2" placeholder="بحث سريع بالعنوان، الباحث، المشرف...">
-            <select style="flex-grow: 1"><option>تصفية حسب الجامعة</option></select>
-        </div>
-        <div class="table-wrapper">
-            <table class="dense-table">
-                <thead>
-                    <tr>
-                        <th width="5%">رقم</th>
-                        <th width="35%">العنوان</th>
-                        <th width="20%">الباحث / المشرف</th>
-                        <th width="15%">الجامعة / القسم</th>
-                        <th width="10%">السنة</th>
-                        <th width="15%">الحالة</th>
-                    </tr>
-                </thead>
-                <tbody id="results-body"></tbody>
-            </table>
-        </div>
+    <div class="table-wrapper">
+        <table class="dense-table">
+            <thead>
+                <tr>
+                    <th width="5%">رقم</th>
+                    <th>العنوان</th>
+                    <th width="20%">الباحث/المشرف</th>
+                    <th width="15%">الجامعة/القسم</th>
+                    <th width="8%">السنة</th>
+                    <th width="10%">الحالة</th>
+                </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+        </table>
     </div>
 </div>
 
 <script>
-    // 1. وظيفة الحفظ اليدوي (بكامل البيانات)
-    document.getElementById('saveBtn').onclick = function() {
+    // 1. الحفظ اليدوي
+    document.getElementById('btnSave').onclick = function() {
         const data = {
-            title: document.getElementById('field-title').value,
-            author: document.getElementById('field-author').value,
-            supervisor: document.getElementById('field-supervisor').value,
-            university: document.getElementById('field-uni').value,
-            dept: document.getElementById('field-dept').value, // الكلية والقسم
-            year: document.getElementById('field-year').value,
-            id: document.getElementById('field-id').value,
-            degree: document.getElementById('field-degree').value,
-            status: document.getElementById('field-status').value,
-            url: document.getElementById('field-url').value
+            title: document.getElementById('f-title').value,
+            author: document.getElementById('f-author').value,
+            supervisor: document.getElementById('f-supervisor').value,
+            university: document.getElementById('f-uni').value,
+            dept: document.getElementById('f-dept').value,
+            year: document.getElementById('f-year').value,
+            id: document.getElementById('f-id').value,
+            degree: document.getElementById('f-degree').value,
+            status: document.getElementById('f-status').value,
+            url: document.getElementById('f-url').value
         };
-
-        if(!data.title || !data.author) { alert("يرجى إدخال العنوان واسم الباحث"); return; }
-
-        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `thesis-${data.id || Date.now()}.json`;
-        a.click();
+        if(!data.title || !data.author) { alert("أدخل العنوان والباحث"); return; }
+        downloadJSON(data, `thesis-${data.id || Date.now()}`);
     };
 
-    // 2. وظيفة استيراد الإكسل
-    document.getElementById('excelBtn').onclick = function() {
+    // 2. استيراد إكسل
+    document.getElementById('btnExcel').onclick = function() {
         const input = document.createElement('input');
-        input.type = 'file'; input.accept = '.xlsx, .xls';
+        input.type = 'file'; input.accept = '.xlsx';
         input.onchange = e => {
-            const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onload = function(ex) {
-                const workbook = XLSX.read(new Uint8Array(ex.target.result), {type: 'array'});
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(sheet);
-                
-                const formatted = jsonData.map(row => ({
-                    title: row['العنوان'], author: row['الباحث'], supervisor: row['المشرف'] || '',
-                    university: row['الجامعة'], dept: row['الكلية'] || row['القسم'] || '',
-                    year: row['السنة'], id: row['رقم الرسالة'] || Date.now(),
-                    status: "متوفرة", degree: row['الدرجة'] || 'ماجستير'
+            reader.onload = ev => {
+                const sheet = XLSX.read(new Uint8Array(ev.target.result), {type:'array'}).Sheets[XLSX.read(new Uint8Array(ev.target.result), {type:'array'}).SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet);
+                const formatted = rows.map(r => ({
+                    title: r['العنوان'], author: r['الباحث'], supervisor: r['المشرف'] || '',
+                    university: r['الجامعة'], dept: r['الكلية'] || r['القسم'] || '',
+                    year: r['السنة'], id: r['رقم الرسالة'] || Date.now(),
+                    status: r['الحالة'] || 'متوفرة', degree: r['الدرجة'] || 'ماجستير'
                 }));
-
-                const blob = new Blob([JSON.stringify(formatted, null, 2)], {type: 'application/json'});
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `bulk-data.json`;
-                a.click();
-                alert("تم تحويل بيانات الإكسل! ارفع الملف الناتج لـ GitHub.");
+                downloadJSON(formatted, 'bulk-import');
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(e.target.files[0]);
         };
         input.click();
     };
 
-    // 3. جلب البيانات وعرضها
-    async function loadTable() {
+    function downloadJSON(data, name) {
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${name}.json`;
+        a.click();
+    }
+
+    // 3. العرض في الجدول
+    async function load() {
         try {
             const res = await fetch('data/master_index.json');
-            if(!res.ok) return;
             const items = await res.json();
             const tbody = document.getElementById('results-body');
             tbody.innerHTML = '';
-            items.forEach((item, idx) => {
+            items.forEach((item, i) => {
+                const statusClass = item.status === 'متوفرة' ? 'bg-available' : 'bg-unavailable';
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr>
-                        <td>${idx + 1}</td>
+                        <td>${i+1}</td>
                         <td style="font-weight:bold">${item.title}</td>
-                        <td>${item.author} <br><small>${item.supervisor || ''}</small></td>
-                        <td>${item.university} <br><small>${item.dept || ''}</small></td>
+                        <td>${item.author}<br><small>${item.supervisor}</small></td>
+                        <td>${item.university}<br><small>${item.dept}</small></td>
                         <td>${item.year}</td>
-                        <td><span class="status-badge available">${item.status}</span></td>
+                        <td><span class="badge ${statusClass}">${item.status}</span></td>
                     </tr>`);
             });
         } catch(e) {}
     }
-
-    document.getElementById('searchInput').onkeyup = function() {
-        let val = this.value.toLowerCase();
-        document.querySelectorAll('#results-body tr').forEach(tr => {
-            tr.style.display = tr.innerText.toLowerCase().includes(val) ? '' : 'none';
-        });
-    };
-
-    window.onload = loadTable;
+    window.onload = load;
 </script>
 </body>
 </html>
