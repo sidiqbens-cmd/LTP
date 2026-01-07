@@ -207,38 +207,80 @@ function displayData(items) {
     });
 }
 
-    // 3. تفعيل زر الحفظ (التصدير للمكتبات)
+<script>
+    // 1. وظيفة زر الحفظ (تحميل الملف للجهاز)
     document.querySelector('.btn-save').onclick = function() {
-        const data = {
-            title: document.getElementById('title').value,
-            author: document.getElementById('author').value,
-            supervisor: document.getElementById('supervisor').value,
-            university: document.getElementById('uni').value,
-            year: document.querySelector('input[type="number"]').value,
-            id: document.getElementById('sid').value,
-            status: document.querySelectorAll('select')[2].value
-        };
+        // جمع البيانات من الخانات بناءً على ترتيبها في الواجهة
+        const inputs = document.querySelectorAll('.input-group input');
+        const select = document.querySelector('.input-group select');
         
-        if(!data.title) return alert("يرجى إدخال العنوان");
+        const data = {
+            title: inputs[0].value,        // خانة العنوان
+            author: inputs[1].value,       // خانة الباحث
+            supervisor: inputs[2].value,   // خانة المشرف
+            university: select.value,      // القائمة المنسدلة للجامعة
+            year: inputs[3].value,         // خانة السنة
+            id: inputs[4].value,           // خانة رقم الرسالة
+            status: "متوفرة"
+        };
 
-        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+        if(!data.title || !data.author) {
+            alert("يرجى إدخال العنوان واسم الباحث على الأقل.");
+            return;
+        }
+
+        // تحويل البيانات لملف JSON وتحميله
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `thesis-${data.id || Date.now()}.json`;
+        a.href = url;
+        a.download = `thesis-${data.id || 'new'}.json`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        
+        alert("تم تجهيز الملف! ستجده في مجلد التنزيلات (Downloads). قم برفعه لمجلد data في GitHub.");
     };
 
-    // 4. تفعيل البحث الحي
+    // 2. وظيفة جلب البيانات وعرضها في الجدول
+    async function loadMainIndex() {
+        const tbody = document.querySelector('.dense-table tbody');
+        try {
+            const response = await fetch('data/master_index.json');
+            if (!response.ok) throw new Error();
+            const items = await response.json();
+            
+            if(items.length > 0) {
+                tbody.innerHTML = ''; // مسح البيانات التجريبية
+                items.forEach((item, index) => {
+                    if(!item.title) return;
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td style="font-weight:bold">${item.title}</td>
+                            <td>${item.author} / ${item.supervisor}</td>
+                            <td>${item.university}</td>
+                            <td>${item.year}</td>
+                            <td><span class="status-badge available">متوفرة</span> 🔗</td>
+                        </tr>`;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+        } catch (e) {
+            console.log("الفهرس الموحد قيد التحديث أو فارغ حالياً.");
+        }
+    }
+
+    // 3. تفعيل البحث الحي
     document.querySelector('.search-bar input').onkeyup = function() {
-        let filter = this.value.toUpperCase();
-        let trs = document.querySelectorAll(".dense-table tbody tr");
-        trs.forEach(tr => {
-            tr.style.display = tr.textContent.toUpperCase().includes(filter) ? "" : "none";
+        let val = this.value.toLowerCase();
+        document.querySelectorAll('.dense-table tbody tr').forEach(tr => {
+            tr.style.display = tr.innerText.toLowerCase().includes(val) ? '' : 'none';
         });
     };
 
     // تشغيل الجلب عند التحميل
-    window.onload = loadTheses;
+    window.onload = loadMainIndex;
 </script>
 </body>
 </html>
