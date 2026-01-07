@@ -119,39 +119,67 @@
     </div>
 </div>
 <script>
-    // وظيفة تصدير البيانات إلى ملف JSON (جاهز للرفع على جيت هب)
+    // 1. جلب البيانات الحقيقية من المستودع عند فتح الصفحة
+    async function loadTheses() {
+        try {
+            const response = await fetch('data/master_index.json');
+            if (!response.ok) throw new Error('لا توجد بيانات بعد');
+            const data = await response.json();
+            displayData(data);
+        } catch (err) {
+            console.log("في انتظار رفع أول ملفات البيانات...");
+        }
+    }
+
+    // 2. وظيفة عرض البيانات في الجدول
+    function displayData(items) {
+        const tbody = document.getElementById('results-body');
+        tbody.innerHTML = ''; // تفريغ الجدول
+        items.forEach(item => {
+            const row = `<tr>
+                <td>${item.id || '---'}</td>
+                <td>${item.title}</td>
+                <td>${item.author} / ${item.supervisor}</td>
+                <td>${item.university}</td>
+                <td>${item.year}</td>
+                <td><span class="status-badge ${item.status === 'متوفرة' ? 'available' : 'not-available'}">${item.status}</span></td>
+            </tr>`;
+            tbody.insertAdjacentHTML('beforeend', row);
+        });
+    }
+
+    // 3. تفعيل زر الحفظ (التصدير للمكتبات)
     document.querySelector('.btn-save').onclick = function() {
         const data = {
-            title: document.querySelector('input[placeholder="العنوان الكامل..."]').value,
-            author: document.querySelectorAll('input')[1].value,
-            supervisor: document.querySelectorAll('input')[2].value,
-            university: document.querySelector('select').value,
+            title: document.getElementById('title').value,
+            author: document.getElementById('author').value,
+            supervisor: document.getElementById('supervisor').value,
+            university: document.getElementById('uni').value,
             year: document.querySelector('input[type="number"]').value,
-            id: document.querySelectorAll('input')[4].value,
+            id: document.getElementById('sid').value,
             status: document.querySelectorAll('select')[2].value
         };
         
-        if(!data.title) return alert("يرجى إدخال العنوان على الأقل");
+        if(!data.title) return alert("يرجى إدخال العنوان");
 
-        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
+        const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
         const a = document.createElement('a');
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = `thesis-${data.id || Date.now()}.json`;
         a.click();
-        alert("تم تجهيز ملف الرسالة. قم برفعه إلى مجلد الجامعة في GitHub");
     };
 
-    // وظيفة البحث السريع في الجدول
+    // 4. تفعيل البحث الحي
     document.querySelector('.search-bar input').onkeyup = function() {
         let filter = this.value.toUpperCase();
         let trs = document.querySelectorAll(".dense-table tbody tr");
-        
         trs.forEach(tr => {
-            let text = tr.textContent.toUpperCase();
-            tr.style.display = text.includes(filter) ? "" : "none";
+            tr.style.display = tr.textContent.toUpperCase().includes(filter) ? "" : "none";
         });
     };
+
+    // تشغيل الجلب عند التحميل
+    window.onload = loadTheses;
 </script>
 </body>
 </html>
