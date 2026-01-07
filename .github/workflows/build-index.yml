@@ -1,0 +1,27 @@
+name: Update Thesis Index
+on:
+  push:
+    paths:
+      - 'data/**' # يعمل فقط عند إضافة أو تعديل ملفات في مجلد البيانات
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate Master Index
+        run: |
+          echo "[" > data/master_index.json
+          # جمع كل ملفات الـ JSON في ملف واحد
+          find data/ -name "*.json" ! -name "master_index.json" -exec cat {} + | sed 's/}{/},{/g' >> data/master_index.json
+          echo "]" >> data/master_index.json
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "LTP Bot"
+          git config --global user.email "bot@ltp.ly"
+          git add data/master_index.json
+          git commit -m "تحديث الفهرس الموحد تلقائياً" || exit 0
+          git push
