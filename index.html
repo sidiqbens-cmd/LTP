@@ -112,58 +112,57 @@
 </div>
 
 <script>
-    // 1. وظيفة جلب البيانات من ملف الفهرس الموحد
-    async function loadData() {
+    // 1. وظيفة زر الحفظ (الذي لا يعمل عندك الآن)
+    document.querySelector('.btn-save').onclick = function() {
+        // نستخدم القيم الموجودة في الخانات
+        const data = {
+            title: document.querySelector('input[placeholder="العنوان الكامل..."]').value,
+            author: document.querySelector('input[placeholder="اسم الباحث الثلاثي"]').value,
+            supervisor: document.querySelector('input[placeholder="محمد الفيتوري"]').value,
+            university: document.querySelector('select').value,
+            year: document.querySelector('input[type="number"]').value,
+            id: document.querySelector('input[placeholder="121"]').value,
+            status: "متوفرة"
+        };
+
+        if(!data.title || !data.author) {
+            alert("يرجى إدخال العنوان والباحث");
+            return;
+        }
+
+        // تحويل البيانات لملف JSON وتحميله فوراً
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `thesis-${data.id || Date.now()}.json`;
+        a.click();
+    };
+
+    // 2. وظيفة جلب البيانات وعرضها (لتصحيح كلمة undefined التي تظهر في صورتك)
+    async function loadTheses() {
         try {
-            // نقوم بجلب الملف الذي يصنعه الـ GitHub Action تلقائياً
             const response = await fetch('data/master_index.json');
-            if (!response.ok) return; // إذا لم يوجد بيانات بعد، لا تفعل شيئاً
+            if (!response.ok) return;
             const items = await response.json();
-            
             const tbody = document.getElementById('results-body');
-            tbody.innerHTML = ''; // تنظيف الجدول من أي بيانات قديمة
+            tbody.innerHTML = ''; 
             
             items.forEach((item, index) => {
-                const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td style="font-weight:bold">${item.title}</td>
-                        <td>${item.author} / ${item.supervisor}</td>
-                        <td>${item.university}</td>
-                        <td>${item.year}</td>
-                        <td>
-                            <span class="status-badge ${item.status === 'متوفرة' ? 'available' : 'not-available'}">
-                                ${item.status}
-                            </span>
-                        </td>
-                    </tr>`;
+                if(!item.title) return;
+                const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td style="font-weight:bold">${item.title}</td>
+                    <td>${item.author} / ${item.supervisor || '---'}</td>
+                    <td>${item.university}</td>
+                    <td>${item.year}</td>
+                    <td><span class="status-badge available">متوفرة</span></td>
+                </tr>`;
                 tbody.insertAdjacentHTML('beforeend', row);
             });
-        } catch (e) {
-            console.log("في انتظار البيانات...");
-        }
+        } catch (err) { console.log("في انتظار البيانات..."); }
     }
 
-    // 2. تفعيل البحث الحي في الجدول
-document.querySelector('.btn-save').onclick = function() {
-    const data = {
-        title: document.querySelector('input[placeholder="العنوان الكامل..."]').value,
-        author: document.querySelectorAll('input')[0].value, // أول خانة إدخال
-        university: document.querySelector('select').value,
-        year: document.querySelector('input[type="number"]').value,
-        status: "متوفرة"
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `thesis-${Date.now()}.json`; // سيحمل الملف باسم التوقيت الحالي
-    a.click();
-    alert("تم تحميل الملف! رفعه الآن إلى مجلد data في GitHub ليظهر في الموقع.");
-};
-
-    // تشغيل الجلب عند فتح الصفحة
-    window.onload = loadData;
+    window.onload = loadTheses;
 </script>
     // 1. جلب البيانات الحقيقية من المستودع عند فتح الصفحة
     async function loadTheses() {
