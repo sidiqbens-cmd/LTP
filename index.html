@@ -145,13 +145,22 @@
     }
 
     // 2. تفعيل البحث الحي في الجدول
-    document.querySelector('.search-bar input').onkeyup = function() {
-        let filter = this.value.toUpperCase();
-        let trs = document.querySelectorAll("#results-body tr");
-        trs.forEach(tr => {
-            tr.style.display = tr.textContent.toUpperCase().includes(filter) ? "" : "none";
-        });
+document.querySelector('.btn-save').onclick = function() {
+    const data = {
+        title: document.querySelector('input[placeholder="العنوان الكامل..."]').value,
+        author: document.querySelectorAll('input')[0].value, // أول خانة إدخال
+        university: document.querySelector('select').value,
+        year: document.querySelector('input[type="number"]').value,
+        status: "متوفرة"
     };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `thesis-${Date.now()}.json`; // سيحمل الملف باسم التوقيت الحالي
+    a.click();
+    alert("تم تحميل الملف! رفعه الآن إلى مجلد data في GitHub ليظهر في الموقع.");
+};
 
     // تشغيل الجلب عند فتح الصفحة
     window.onload = loadData;
