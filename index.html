@@ -132,21 +132,22 @@
     }
 
     // 2. وظيفة عرض البيانات في الجدول
-    function displayData(items) {
-        const tbody = document.getElementById('results-body');
-        tbody.innerHTML = ''; // تفريغ الجدول
-        items.forEach(item => {
-            const row = `<tr>
-                <td>${item.id || '---'}</td>
-                <td>${item.title}</td>
-                <td>${item.author} / ${item.supervisor}</td>
-                <td>${item.university}</td>
-                <td>${item.year}</td>
-                <td><span class="status-badge ${item.status === 'متوفرة' ? 'available' : 'not-available'}">${item.status}</span></td>
-            </tr>`;
-            tbody.insertAdjacentHTML('beforeend', row);
-        });
-    }
+function displayData(items) {
+    const tbody = document.getElementById('results-body');
+    if(!tbody) return;
+    tbody.innerHTML = ''; 
+    items.forEach((item, index) => {
+        const row = `<tr>
+            <td>${index + 1}</td>
+            <td>${item.title || 'بدون عنوان'}</td>
+            <td>${item.author || 'غير محدد'} / ${item.supervisor || '---'}</td>
+            <td>${item.university || 'ليبيا'}</td>
+            <td>${item.year || '2026'}</td>
+            <td><span class="status-badge available">${item.status || 'متوفرة'}</span></td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+}
 
     // 3. تفعيل زر الحفظ (التصدير للمكتبات)
     document.querySelector('.btn-save').onclick = function() {
