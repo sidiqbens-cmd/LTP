@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الرسائل الجامعية الليبية | Libyan Theses Portal</title>
+    <style>
+        :root { --primary: #1a2a3a; --accent: #3498db; --success: #27ae60; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e9ecef; margin: 0; padding: 5px; font-size: 12px; color: #333; }
+        .dashboard { max-width: 1250px; margin: auto; background: white; border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); overflow: hidden; height: 98vh; display: flex; flex-direction: column; }
+        
+        /* الهيدر المدمج باللغتين */
+        header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); }
+        header h1 { margin: 0; font-size: 1.1rem; letter-spacing: 0.5px; }
+        .lang-en { font-family: Arial, sans-serif; font-size: 0.9rem; opacity: 0.9; margin-right: 10px; border-right: 1px solid #555; padding-right: 10px; }
+
+        /* منطقة الإدخال فائقة الكثافة */
+        .entry-section { padding: 10px; background: var(--light); border-bottom: 1px solid #ddd; }
+        .grid-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .full { grid-column: span 6; }
+        .triple { grid-column: span 3; }
+        .double { grid-column: span 2; }
+        
+        input, select { padding: 4px 8px; border: 1px solid #bbb; border-radius: 3px; width: 100%; box-sizing: border-box; font-size: 12px; height: 28px; }
+        input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 3px rgba(52,152,219,0.3); }
+        label { display: block; margin-bottom: 1px; font-weight: 600; font-size: 11px; color: #444; }
+
+        .btn-group { margin-top: 8px; display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
+        button { padding: 5px 15px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .btn-save { background: var(--success); color: white; }
+        .btn-export { background: #6c757d; color: white; }
+        .btn-excel { background: #217346; color: white; } /* لون الإكسل الشهير */
+
+        /* منطقة البحث والنتائج */
+        .search-section { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .search-bar { margin-bottom: 8px; display: flex; gap: 8px; background: #eee; padding: 6px; border-radius: 4px; }
+        
+        .table-wrapper { flex-grow: 1; overflow-y: auto; border: 1px solid #eee; }
+        .dense-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+        .dense-table th { background: #f1f1f1; padding: 6px; text-align: right; border: 1px solid #ddd; position: sticky; top: 0; color: var(--primary); }
+        .dense-table td { padding: 4px 6px; border: 1px solid #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dense-table tr:hover { background: #f9f9f9; }
+        
+        .status-badge { padding: 1px 5px; border-radius: 4px; font-size: 9px; color: white; font-weight: bold; }
+        .available { background: var(--success); }
+        .not-available { background: #d9534f; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <header>
+        <h1>
+            <span>بوابة الرسائل الجامعية الليبية</span>
+            <span class="lang-en">Libyan Theses Portal (LTP)</span>
+        </h1>
+        <div style="font-size: 10px;">الفهرس الليبي الموحد v1.0</div>
+    </header>
+
+    <div class="entry-section">
+        <div class="grid-container">
+            <div class="triple"><label>عنوان الرسالة</label><input type="text" placeholder="العنوان الكامل..."></div>
+            <div class="double"><label>الباحث</label><input type="text"></div>
+            <div class="double"><label>المشرف العلمي</label><input type="text"></div>
+            
+            <div><label>الجامعة</label>
+                <select>
+                    <option>جامعة طرابلس</option>
+                    <option>جامعة بنغازي</option>
+                    <option>جامعة سبها</option>
+                </select>
+            </div>
+            <div><label>الكلية/القسم</label><input type="text"></div>
+            <div><label>السنة</label><input type="number" value="2026"></div>
+            <div><label>رقم الرسالة</label><input type="text"></div>
+            <div><label>الدرجة</label><select><option>ماجستير</option><option>دكتوراه</option></select></div>
+            <div><label>الحالة</label><select><option>متوفرة</option><option>غير متوفرة</option></select></div>
+            
+            <div class="triple"><label>رابط المستخلص أو الرسالة (URL)</label><input type="url" placeholder="https://..."></div>
+            <div class="triple btn-group">
+                <button class="btn-excel">استيراد Excel</button>
+                <button class="btn-export">تصدير بيانات</button>
+                <button class="btn-save">حفظ في الفهرس</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <div class="search-bar">
+            <input type="text" style="flex-grow: 2" placeholder="بحث سريع بالعنوان، الباحث، المشرف...">
+            <select style="flex-grow: 1"><option>تصفية حسب الجامعة</option></select>
+            <select style="flex-grow: 1"><option>تصفية حسب السنة</option></select>
+        </div>
+        
+        <div class="table-wrapper">
+            <table class="dense-table">
+                <thead>
+                    <tr>
+                        <th width="5%">رقم</th>
+                        <th width="35%">العنوان</th>
+                        <th width="20%">الباحث / المشرف</th>
+                        <th width="15%">الجامعة</th>
+                        <th width="10%">السنة</th>
+                        <th width="15%">الحالة والروابط</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LTP-01</td>
+                        <td>دراسة تحليلية للبيانات الجامعية في ليبيا</td>
+                        <td>أحمد محمد / د. سالم علي</td>
+                        <td>جامعة طرابلس</td>
+                        <td>2025</td>
+                        <td><span class="status-badge available">متوفرة</span> 🔗</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
