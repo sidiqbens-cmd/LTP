@@ -135,16 +135,28 @@
 function displayData(items) {
     const tbody = document.getElementById('results-body');
     if(!tbody) return;
-    tbody.innerHTML = ''; 
+    
+    tbody.innerHTML = ''; // تنظيف الجدول قبل عرض البيانات الجديدة
+    
     items.forEach((item, index) => {
-        const row = `<tr>
-            <td>${index + 1}</td>
-            <td>${item.title || 'بدون عنوان'}</td>
-            <td>${item.author || 'غير محدد'} / ${item.supervisor || '---'}</td>
-            <td>${item.university || 'ليبيا'}</td>
-            <td>${item.year || '2026'}</td>
-            <td><span class="status-badge available">${item.status || 'متوفرة'}</span></td>
-        </tr>`;
+        // التحقق من وجود بيانات أساسية لتجنب الصفوف الفارغة
+        if(!item.title) return; 
+
+        const row = `
+            <tr>
+                <td style="text-align:center;">${index + 1}</td>
+                <td style="font-weight:bold;">${item.title}</td>
+                <td>${item.author} <br> <small style="color: #666;">إشراف: ${item.supervisor}</small></td>
+                <td>${item.university}</td>
+                <td style="text-align:center;">${item.year}</td>
+                <td style="text-align:center;">
+                    <span class="status-badge ${item.status === 'متوفرة' ? 'available' : 'not-available'}">
+                        ${item.status}
+                    </span>
+                    ${item.url ? `<a href="${item.url}" target="_blank" title="فتح الرابط" style="text-decoration:none; margin-right:5px;">🔗</a>` : ''}
+                </td>
+            </tr>`;
+        
         tbody.insertAdjacentHTML('beforeend', row);
     });
 }
