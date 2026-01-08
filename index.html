@@ -9,85 +9,76 @@
     <style>
         :root { --red: #e74c3c; --green: #27ae60; --dark: #2d3436; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 5px; font-size: 14px; }
-        header { background: white; border-bottom: 4px solid #000; padding: 10px; text-align: center; margin-bottom: 5px; }
-        .h-red { color: var(--red); font-size: 16px; margin: 0; }
+        header { background: white; border-bottom: 4px solid #000; padding: 8px; text-align: center; position: relative; }
+        .h-red { color: var(--red); font-size: 16px; margin: 0; font-weight: bold; }
         .h-black { color: #000; font-size: 48px; font-weight: 900; margin: -5px 0; }
-        .h-green { color: var(--green); font-size: 16px; margin: 0; }
+        .h-green { color: var(--green); font-size: 16px; margin: 0; font-weight: bold; }
 
-        .section-box { background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 8px; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        input, select { height: 32px; border: 1px solid #ccc; border-radius: 3px; padding: 0 8px; font-size: 13px; width: 100%; box-sizing: border-box; }
-        
-        .tab-btn { padding: 8px 15px; cursor: pointer; border: none; background: #ddd; font-weight: bold; }
-        .tab-btn.active { background: var(--dark); color: white; }
+        /* زر انضم إلينا */
+        .join-btn { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: var(--green); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
-        .btn-save { background: var(--green); color: white; height: 35px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; padding: 0 25px; }
+        .entry-section { background: #fff; padding: 10px; border-radius: 4px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        input, select { height: 28px; border: 1px solid #ccc; border-radius: 3px; padding: 0 8px; font-size: 13px; width: 100%; box-sizing: border-box; }
         
-        .table-wrap { height: 40vh; overflow-y: auto; background: white; border: 1px solid #ddd; margin-top: 5px; }
+        .btn-row { display: flex; gap: 8px; justify-content: center; margin: 8px 0; }
+        button { cursor: pointer; font-weight: bold; border: none; border-radius: 4px; }
+        .btn-save { background: var(--green); color: white; height: 32px; padding: 0 25px; }
+        .btn-excel { background: var(--dark); color: white; height: 32px; padding: 0 15px; }
+
+        .filter-bar { background: #dfe6e9; padding: 8px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; border-right: 5px solid var(--green); }
+
+        .table-wrap { height: 60vh; overflow-y: auto; background: white; border: 1px solid #ddd; margin-top: 5px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #f8f9fa; position: sticky; top: 0; padding: 8px; border: 1px solid #ddd; }
-        td { padding: 6px; border: 1px solid #eee; text-align: center; }
+        td { padding: 5px; border: 1px solid #eee; text-align: center; }
+
+        /* النافذة المنبثقة */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 40%; border-radius: 8px; }
     </style>
 </head>
 <body>
 
 <header>
+    <button class="join-btn" onclick="document.getElementById('joinModal').style.display='block'">انضم إلينا</button>
     <p class="h-red">بوابة الرسائل الجامعية</p>
     <p class="h-black">LTP</p>
     <p class="h-green">Libyan Theses Portal</p>
 </header>
 
-<div style="margin-bottom: 10px;">
-    <button class="tab-btn active" onclick="showTab('tab-data')">إدخال الرسائل</button>
-    <button class="tab-btn" onclick="showTab('tab-library')">انضمام المكتبات</button>
+<div class="entry-section">
+    <input type="text" id="f-title" placeholder="عنوان الرسالة" class="nav" style="grid-column: span 2;">
+    <input type="text" id="f-author" placeholder="اسم الباحث" class="nav">
+    <input type="text" id="f-supervisor" placeholder="المشرف" class="nav">
+    <select id="f-uni" class="nav"><option value="">الجامعة</option><option>طرابلس</option><option>بنغازي</option></select>
+    <select id="f-college" class="nav"><option value="">الكلية</option><option>الآداب</option><option>الهندسة</option></select>
+    <select id="f-dept" class="nav"><option value="">القسم</option><option>المكتبات</option><option>الحاسوب</option></select>
+    <input type="number" id="f-year" value="2026" class="nav">
+    <select id="f-loc" class="nav" style="grid-column: span 2;"><option value="">اختر المكتبة (مكان الرسالة)</option></select>
+    <input type="text" id="f-id" placeholder="رقم الرسالة" class="nav">
 </div>
 
-<div id="tab-data" class="tab-content">
-    <div class="section-box grid-4">
-        <input type="text" id="f-title" placeholder="عنوان الرسالة" class="nav" style="grid-column: span 2;">
-        <input type="text" id="f-author" placeholder="اسم الباحث" class="nav">
-        <input type="text" id="f-supervisor" placeholder="المشرف" class="nav">
-        <select id="f-uni" class="nav"><option value="">الجامعة</option><option>طرابلس</option><option>بنغازي</option></select>
-        <select id="f-college" class="nav"><option value="">الكلية</option><option>الآداب</option><option>الهندسة</option></select>
-        <select id="f-dept" class="nav"><option value="">القسم</option><option>المكتبات</option><option>الحاسوب</option></select>
-        <input type="number" id="f-year" value="2026" class="nav">
-        <input type="text" id="f-loc" placeholder="مكان الرسالة (المكتبة المودعة)" class="nav" style="grid-column: span 2;">
-        <input type="text" id="f-id" placeholder="رقم الرسالة" class="nav">
-        <button class="btn-save" id="btnSave">حفظ الرسالة</button>
-    </div>
-
-    <div class="section-box" style="background:#dfe6e9; border-right: 5px solid var(--green);">
-        <div class="grid-4" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr;">
-            <input type="text" id="s-title" placeholder="بحث بالعنوان...">
-            <select id="s-uni"><option value="">كل الجامعات</option><option>طرابلس</option></select>
-            <select id="s-dept"><option value="">كل الأقسام</option><option>المكتبات</option></select>
-            <input type="number" id="s-year" placeholder="سنة">
-            <button style="background:var(--dark); color:white; border:none; border-radius:3px;" onclick="exportExcel()">تصدير للبحث</button>
-        </div>
-    </div>
+<div class="btn-row">
+    <button class="btn-save" id="btnSave">حفظ في السحابة</button>
+    <button class="btn-excel" onclick="document.getElementById('xl').click()">استيراد Excel</button>
+    <input type="file" id="xl" style="display:none" accept=".xlsx">
 </div>
 
-<div id="tab-library" class="tab-content" style="display:none;">
-    <div class="section-box grid-4">
-        <input type="text" id="lib-name" placeholder="اسم المكتبة">
-        <input type="text" id="lib-address" placeholder="العنوان بالتفصيل">
-        <select id="lib-type"><option value="">نوع التبعية</option><option>جامعية</option><option>عامة</option><option>مركز بحوث</option></select>
-        <input type="number" id="lib-founded" placeholder="سنة التأسيس">
-        <input type="email" id="lib-email" placeholder="البريد الإلكتروني">
-        <input type="text" id="lib-phone" placeholder="بيانات الاتصال (هاتف)">
-        <input type="password" id="lib-pass" placeholder="كلمة المرور">
-        <button class="btn-save" onclick="registerLibrary()">تسجيل المكتبة</button>
-    </div>
+<div class="filter-bar">
+    <input type="text" id="s-title" placeholder="بحث بالعنوان...">
+    <select id="s-college"><option value="">كل الكليات</option><option>الآداب</option><option>الهندسة</option></select>
+    <select id="s-dept"><option value="">كل الأقسام</option><option>المكتبات</option></select>
+    <input type="number" id="s-year" placeholder="سنة">
+    <select id="s-uni"><option value="">كل الجامعات</option><option>طرابلس</option></select>
 </div>
 
 <div class="table-wrap">
-    <table id="mainTable">
+    <table>
         <thead>
             <tr>
-                <th>العنوان / الباحث</th>
-                <th>الجامعة / الكلية</th>
-                <th>القسم</th>
-                <th>مكان التواجد</th>
+                <th width="40%">العنوان والباحث</th>
+                <th>الكلية / القسم</th>
+                <th>المكان (المكتبة)</th>
                 <th>الرقم</th>
                 <th>السنة</th>
                 <th>إجراءات</th>
@@ -97,7 +88,22 @@
     </table>
 </div>
 
+<div id="joinModal" class="modal">
+    <div class="modal-content">
+        <h3>طلب انضمام مكتبة للبوابة</h3>
+        <div style="display:grid; gap:10px;">
+            <input type="text" id="l-name" placeholder="اسم المكتبة">
+            <input type="text" id="l-addr" placeholder="العنوان التفصيلي والموقع">
+            <input type="email" id="l-email" placeholder="البريد الإلكتروني">
+            <input type="text" id="l-phone" placeholder="هاتف التواصل">
+            <button class="btn-save" onclick="submitJoin()">إرسال الطلب للمراجعة</button>
+            <button style="background:#ccc; color:black; height:30px; border:none; border-radius:4px;" onclick="document.getElementById('joinModal').style.display='none'">إلغاء</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    // إعدادات Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBU-Y2l1rrpAPOpDhEXI7WjwACx0LgZLX0",
       authDomain: "ltp-libya.firebaseapp.com",
@@ -107,53 +113,51 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // تبديل التبويبات
-    function showTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).style.display = 'block';
-        event.currentTarget.classList.add('active');
-    }
+    // 1. تحميل أسماء المكتبات المعتمدة في القائمة المنسدلة تلقائياً
+    db.collection("libraries").where("status", "==", "approved").onSnapshot(snap => {
+        const sel = document.getElementById('f-loc');
+        sel.innerHTML = '<option value="">اختر المكتبة (مكان الرسالة)</option>';
+        snap.forEach(doc => {
+            sel.innerHTML += `<option>${doc.data().name}</option>`;
+        });
+    });
 
-    // تسجيل مكتبة
-    async function registerLibrary() {
-        const libData = {
-            name: document.getElementById('lib-name').value,
-            address: document.getElementById('lib-address').value,
-            type: document.getElementById('lib-type').value,
-            founded: document.getElementById('lib-founded').value,
-            email: document.getElementById('lib-email').value,
-            phone: document.getElementById('lib-phone').value,
-            pass: document.getElementById('lib-pass').value, // ملاحظة: في النسخة النهائية يستخدم Auth
-            regDate: firebase.firestore.FieldValue.serverTimestamp()
+    // 2. إرسال طلب انضمام
+    async function submitJoin() {
+        const data = { 
+            name: document.getElementById('l-name').value, 
+            addr: document.getElementById('l-addr').value,
+            email: document.getElementById('l-email').value,
+            status: "pending" 
         };
-        if(!libData.name || !libData.email) return alert("أكمل بيانات المكتبة");
-        await db.collection("libraries").add(libData);
-        alert("تم تسجيل طلب انضمام المكتبة بنجاح!");
+        await db.collection("libraries").add(data);
+        alert("تم إرسال طلبك، سيتم مراجعته واعتماده قريباً.");
+        document.getElementById('joinModal').style.display = 'none';
     }
 
-    // حفظ الرسائل والتصفية (نفس الكود السابق المصلح)
+    // 3. الحفظ والاستيراد والتصفية (كاملة ومصلحة)
     document.getElementById('btnSave').onclick = async function() {
         const data = {
             title: document.getElementById('f-title').value,
             author: document.getElementById('f-author').value,
-            uni: document.getElementById('f-uni').value,
             college: document.getElementById('f-college').value,
             dept: document.getElementById('f-dept').value,
             loc: document.getElementById('f-loc').value,
             year: document.getElementById('f-year').value,
             id_t: document.getElementById('f-id').value,
+            uni: document.getElementById('f-uni').value,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
         await db.collection("theses").add(data);
-        alert("تم الحفظ!");
+        document.querySelectorAll('.nav').forEach(n => { if(n.id !== 'f-year') n.value = ''; });
     };
 
+    // التصفية اللحظية (بالكلية لوحدها والباقي)
     function loadData() {
         db.collection("theses").orderBy("timestamp", "desc").onSnapshot(snap => {
             const body = document.getElementById('rows');
             const sTitle = document.getElementById('s-title').value.toLowerCase();
-            const sUni = document.getElementById('s-uni').value;
+            const sColl = document.getElementById('s-college').value;
             const sDept = document.getElementById('s-dept').value;
             const sYear = document.getElementById('s-year').value;
 
@@ -161,29 +165,26 @@
             snap.forEach(doc => {
                 const d = doc.data();
                 if ((!sTitle || d.title.toLowerCase().includes(sTitle)) &&
-                    (!sUni || d.uni === sUni) &&
+                    (!sColl || d.college === sColl) &&
                     (!sDept || d.dept === sDept) &&
                     (!sYear || d.year == sYear)) {
-                    
                     body.insertAdjacentHTML('beforeend', `<tr>
                         <td style="text-align:right"><b>${d.title}</b><br><small>${d.author}</small></td>
-                        <td>${d.uni}<br><small>${d.college}</small></td>
-                        <td>${d.dept}</td>
+                        <td>${d.college}<br><small>${d.dept}</small></td>
                         <td>${d.loc}</td>
                         <td style="color:blue; font-weight:bold">${d.id_t}</td>
                         <td>${d.year}</td>
-                        <td><button onclick="delDoc('${doc.id}')" style="background:red; color:white; border:none; padding:2px 5px; cursor:pointer">حذف</button></td>
+                        <td><button onclick="delDoc('${doc.id}')" style="background:red; color:white; border:none; padding:2px 5px;">حذف</button></td>
                     </tr>`);
                 }
             });
         });
     }
 
-    ['s-title', 's-uni', 's-dept', 's-year'].forEach(id => {
+    ['s-title', 's-college', 's-dept', 's-year'].forEach(id => {
         document.getElementById(id).addEventListener('input', loadData);
     });
 
-    async function delDoc(id) { if(confirm("حذف؟")) await db.collection("theses").doc(id).delete(); }
     window.onload = loadData;
 </script>
 </body>
