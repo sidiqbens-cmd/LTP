@@ -2,48 +2,36 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libyan Theses Portal | LTP</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #0f172a; --accent: #3b82f6; --success: #10b981; --bg-dark: #1e293b; --text-light: #f1f5f9; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-dark); color: var(--text-light); margin: 0; padding: 5px; font-size: 13px; }
+        :root { --libya-red: #e74c3c; --libya-green: #27ae60; --libya-black: #1a1a1a; --text: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--libya-black); color: var(--text); margin: 0; padding: 10px; font-size: 15px; }
         
-        /* الهوية البصرية */
-        header { background: var(--primary); padding: 15px; text-align: center; border-bottom: 4px solid var(--accent); border-radius: 8px 8px 0 0; }
-        .head-l1 { font-size: 16px; opacity: 0.9; }
-        .head-l2 { font-size: 48px; font-weight: 900; color: var(--accent); margin: 5px 0; letter-spacing: 5px; }
-        .head-l3 { font-size: 18px; letter-spacing: 2px; opacity: 0.8; }
+        header { border-bottom: 5px solid var(--libya-red); padding: 20px; text-align: center; background: #000; }
+        .head-l1 { font-size: 18px; color: var(--libya-red); }
+        .head-l2 { font-size: 60px; font-weight: 900; color: #fff; margin: 10px 0; }
+        .head-l3 { font-size: 20px; color: var(--libya-green); }
 
-        .container { background: #2d3748; padding: 15px; border-radius: 8px; margin-top: 5px; }
+        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; padding: 15px; background: #222; border-radius: 8px; margin-bottom: 10px; }
+        input, select { background: #333; border: 1px solid #444; color: white; height: 35px; padding: 5px; border-radius: 4px; width: 100%; }
+        input:focus { border-color: var(--libya-green); outline: none; }
+
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin: 15px 0; }
+        .btn-save { background: var(--libya-green); font-size: 18px; padding: 10px 40px; }
+        button { cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; }
         
-        /* تنظيم الخانات في مجموعات */
-        .grid-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; padding: 10px; border: 1px solid #4a5568; border-radius: 6px; }
-        .section-title { grid-column: 1 / -1; font-weight: bold; color: var(--accent); border-bottom: 1px solid #4a5568; padding-bottom: 5px; margin-bottom: 5px; }
-
-        .field { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 12px; font-weight: 600; color: #cbd5e0; }
-        input, select { background: #1a202c; border: 1px solid #4a5568; color: white; height: 32px; padding: 0 8px; border-radius: 4px; font-size: 13px; }
+        .filter-zone { background: #111; padding: 10px; border-right: 5px solid var(--libya-green); display: flex; gap: 10px; margin-bottom: 10px; }
         
-        /* أزرار التحكم */
-        .actions { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
-        button { cursor: pointer; border: none; border-radius: 4px; padding: 8px 20px; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-save { background: var(--success); }
-        .btn-excel { background: #2d6a4f; }
-        .btn-template { background: #4a5568; }
-
-        /* شريط البحث والتصفية */
-        .filter-bar { background: #1a202c; padding: 10px; margin-top: 10px; border-radius: 6px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; border-right: 4px solid var(--accent); }
-
-        /* الجدول */
-        .table-wrapper { margin-top: 10px; background: white; border-radius: 6px; overflow: hidden; height: 400px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; color: #1a202c; font-size: 13px; }
-        th { background: #edf2f7; padding: 10px; text-align: right; position: sticky; top: 0; border-bottom: 2px solid #cbd5e0; }
-        td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
-        tr:hover { background: #f7fafc; }
-        .badge { padding: 3px 8px; border-radius: 12px; color: white; font-size: 11px; }
+        .data-table { width: 100%; background: white; color: black; border-collapse: collapse; border-radius: 8px; overflow: hidden; }
+        .data-table th { background: #eee; padding: 12px; text-align: right; border-bottom: 2px solid #ddd; }
+        .data-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        
+        .action-btns { display: flex; gap: 5px; }
+        .btn-edit { background: #3498db; padding: 2px 8px; font-size: 12px; }
+        .btn-del { background: var(--libya-red); padding: 2px 8px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -55,140 +43,108 @@
 </header>
 
 <div class="container">
-    <div class="grid-section">
-        <div class="section-title">بيانات الرسالة والباحث</div>
-        <div class="field" style="grid-column: span 2;"><label>عنوان الرسالة</label><input type="text" id="f-title"></div>
-        <div class="field"><label>اسم الباحث</label><input type="text" id="f-author"></div>
-        <div class="field"><label>المشرف العلمي</label><input type="text" id="f-supervisor"></div>
+    <div class="main-grid" id="inputForm">
+        <input type="text" id="f-title" placeholder="عنوان الرسالة" class="nav-enter">
+        <input type="text" id="f-author" placeholder="اسم الباحث" class="nav-enter">
+        <input type="text" id="f-supervisor" placeholder="المشرف العلمي" class="nav-enter">
+        <select id="f-uni" class="nav-enter">
+            <option value="">الجامعة</option>
+            <option>جامعة طرابلس</option><option>جامعة بنغازي</option>
+        </select>
+        <select id="f-college" class="nav-enter"><option value="">الكلية</option><option>الآداب</option><option>الهندسة</option></select>
+        <select id="f-dept" class="nav-enter"><option value="">القسم</option><option>المكتبات</option><option>الحاسوب</option></select>
+        <input type="number" id="f-year" value="2026" class="nav-enter">
+        <input type="text" id="f-location" placeholder="مكان تواجد الرسالة" class="nav-enter">
+        <input type="text" id="f-id" placeholder="رقم الرسالة" class="nav-enter">
     </div>
 
-    <div class="grid-section">
-        <div class="section-title">بيانات الجهة والتصنيف</div>
-        <div class="field"><label>الجامعة</label>
-            <select id="f-uni">
-                <option value="">اختر الجامعة...</option>
-                <option>جامعة طرابلس</option><option>جامعة بنغازي</option><option>جامعة سبها</option><option>جامعة الزاوية</option><option>جامعة مصراتة</option>
-            </select>
-        </div>
-        <div class="field"><label>الكلية</label><input type="text" id="f-college"></div>
-        <div class="field"><label>القسم</label><input type="text" id="f-dept"></div>
-        <div class="field" style="width: 80px;"><label>السنة</label><input type="number" id="f-year" value="2026"></div>
-        <div class="field" style="width: 100px;"><label>الدرجة</label><select id="f-degree"><option>ماجستير</option><option>دكتوراه</option></select></div>
-        <div class="field" style="width: 100px;"><label>الحالة</label><select id="f-status"><option value="متوفرة">متوفرة</option><option value="غير متوفرة">غير متوفرة</option></select></div>
-        <div class="field" style="width: 80px;"><label>رقم الرسالة</label><input type="text" id="f-id"></div>
-    </div>
-
-    <div class="actions">
-        <button class="btn-template" onclick="downloadTemplate()">تحميل قالب Excel</button>
-        <button class="btn-excel" id="btnExcel">استيراد من Excel</button>
+    <div class="btn-group">
         <button class="btn-save" id="btnSave">حفظ في السحابة</button>
+        <button style="background:#555" onclick="document.getElementById('excelInput').click()">استيراد Excel</button>
+        <input type="file" id="excelInput" style="display:none" accept=".xlsx">
     </div>
 
-    <div class="filter-bar">
-        <span style="font-weight: bold; color: var(--accent);">تصفية النتائج:</span>
-        <input type="text" id="s-title" placeholder="بحث بالعنوان..." style="flex: 1;">
-        <select id="s-uni"><option value="">كل الجامعات</option><option>جامعة طرابلس</option><option>جامعة بنغازي</option></select>
-        <input type="text" id="s-college" placeholder="الكلية..." style="width: 120px;">
-        <input type="number" id="s-year" placeholder="السنة" style="width: 80px;">
+    <div class="filter-zone">
+        <input type="text" id="s-title" placeholder="بحث سريع بالاسم أو القسم..." style="flex:2">
+        <select id="s-dept" style="flex:1"><option value="">تصفية بالقسم...</option><option>المكتبات</option></select>
     </div>
 
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th width="40%">العنوان والباحث</th>
-                    <th>الجامعة والكلية</th>
-                    <th width="100px">رقم الرسالة</th>
-                    <th width="80px">السنة</th>
-                    <th width="100px">الحالة</th>
-                    <th width="40px">#</th>
-                </tr>
-            </thead>
-            <tbody id="results-body"></tbody>
-        </table>
-    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>العنوان / الباحث</th>
+                <th>القسم والكلية</th>
+                <th>مكان التواجد</th>
+                <th>رقم الرسالة</th>
+                <th>السنة</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+    </table>
 </div>
 
 <script>
-    // إعدادات Firebase
+    // بيانات Firebase الخاصة بك
     const firebaseConfig = {
       apiKey: "AIzaSyBU-Y2l1rrpAPOpDhEXI7WjwACx0LgZLX0",
       authDomain: "ltp-libya.firebaseapp.com",
       projectId: "ltp-libya",
-      storageBucket: "ltp-libya.firebasestorage.app",
-      messagingSenderId: "761649252036",
       appId: "1:761649252036:web:96e615cae0a5584f3bab91"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // حفظ البيانات
+    // 1. التنقل بـ Enter وتصفير الخانات
+    const inputs = document.querySelectorAll('.nav-enter');
+    inputs.forEach((input, index) => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const next = inputs[index + 1];
+                if (next) next.focus(); else document.getElementById('btnSave').click();
+            }
+        });
+    });
+
+    // 2. الحفظ والحذف والتعديل
     document.getElementById('btnSave').onclick = async function() {
         const data = {
             title: document.getElementById('f-title').value,
             author: document.getElementById('f-author').value,
-            supervisor: document.getElementById('f-supervisor').value,
-            university: document.getElementById('f-uni').value,
-            college: document.getElementById('f-college').value,
             dept: document.getElementById('f-dept').value,
+            location: document.getElementById('f-location').value,
             year: document.getElementById('f-year').value,
-            degree: document.getElementById('f-degree').value,
-            status: document.getElementById('f-status').value,
             id_thesis: document.getElementById('f-id').value,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
-        if(!data.title || !data.university) return alert("يرجى إكمال البيانات الأساسية");
         await db.collection("theses").add(data);
-        alert("تم الحفظ بنجاح");
-        ["f-title", "f-author", "f-id"].forEach(id => document.getElementById(id).value = '');
+        inputs.forEach(i => i.value = ''); // تصفير الخانات
+        inputs[0].focus();
     };
 
-    // تحميل قالب الإكسل
-    function downloadTemplate() {
-        const data = [["العنوان", "الباحث", "المشرف", "الجامعة", "الكلية", "القسم", "السنة", "رقم الرسالة", "الدرجة", "الحالة"]];
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Template");
-        XLSX.writeFile(wb, "LTP_Template.xlsx");
-    }
-
-    // عرض وتصفية البيانات
-    function renderData(filters = {}) {
-        let query = db.collection("theses").orderBy("timestamp", "desc");
-        
-        query.onSnapshot(snapshot => {
-            const tbody = document.getElementById('results-body');
-            tbody.innerHTML = '';
-            let filteredDocs = snapshot.docs.map(d => d.data());
-
-            // تصفية محلية سريعة
-            const sTitle = document.getElementById('s-title').value.toLowerCase();
-            const sUni = document.getElementById('s-uni').value;
-            
-            filteredDocs.filter(item => {
-                return (!sTitle || item.title.toLowerCase().includes(sTitle)) &&
-                       (!sUni || item.university === sUni);
-            }).forEach((item, i) => {
-                const statusColor = item.status === 'متوفرة' ? '#10b981' : '#ef4444';
-                tbody.insertAdjacentHTML('beforeend', `
-                    <tr>
-                        <td><strong>${item.title}</strong><br><small>${item.author} | إشراف: ${item.supervisor}</small></td>
-                        <td>${item.university}<br><small>${item.college} - ${item.dept}</small></td>
-                        <td style="text-align:center; color:#3b82f6; font-weight:bold;">${item.id_thesis || '---'}</td>
-                        <td style="text-align:center">${item.year}</td>
-                        <td style="text-align:center"><span class="badge" style="background:${statusColor}">${item.status}</span></td>
-                        <td style="color:#cbd5e0; font-size:10px;">${i+1}</td>
-                    </tr>`);
-            });
+    // 3. عرض البيانات مع أزرار التحكم
+    db.collection("theses").orderBy("timestamp", "desc").onSnapshot(snap => {
+        const tbody = document.getElementById('results-body');
+        tbody.innerHTML = '';
+        snap.docs.forEach(doc => {
+            const d = doc.data();
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr>
+                    <td><strong>${d.title}</strong><br>${d.author}</td>
+                    <td>${d.dept}</td>
+                    <td>${d.location}</td>
+                    <td>${d.id_thesis}</td>
+                    <td>${d.year}</td>
+                    <td class="action-btns">
+                        <button class="btn-edit" onclick="editDoc('${doc.id}')">تعديل</button>
+                        <button class="btn-del" onclick="deleteDoc('${doc.id}')">حذف</button>
+                    </td>
+                </tr>`);
         });
-    }
+    });
 
-    // تفعيل البحث اللحظي
-    document.getElementById('s-title').oninput = () => renderData();
-    document.getElementById('s-uni').onchange = () => renderData();
-    
-    window.onload = () => renderData();
+    async function deleteDoc(id) { if(confirm("هل أنت متأكد من حذف هذه الرسالة؟")) await db.collection("theses").doc(id).delete(); }
 </script>
 </body>
 </html>
