@@ -1,84 +1,17 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>«·›Â—” «··Ì»Ì «·„ÊÕœ | LTP Cloud</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <style>
-        :root { --primary: #121d28; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --bg-darker: #dfe4ea; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-darker); margin: 0; padding: 5px; font-size: 11px; }
-        .dashboard { max-width: 1380px; margin: auto; background: white; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); height: 98vh; display: flex; flex-direction: column; }
-        header { background: var(--primary); color: white; padding: 5px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); }
-        .entry-section { padding: 8px; background: #f1f3f5; border-bottom: 1px solid #ccc; }
-        .grid-container { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
-        .field-box { display: flex; flex-direction: column; }
-        .w-title { flex: 3; min-width: 250px; } .w-author { flex: 1.2; min-width: 150px; }
-        label { font-weight: bold; font-size: 10px; color: #444; margin-bottom: 2px; }
-        input, select { height: 24px; padding: 2px 6px; border: 1px solid #abb4be; border-radius: 2px; font-size: 11px; }
-        .btn-group { display: flex; gap: 4px; padding-top: 5px; }
-        button { height: 26px; padding: 0 12px; border: none; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 10.5px; color: white; }
-        .btn-save { background: var(--success); } .btn-excel { background: #217346; }
-        .table-wrapper { flex-grow: 1; overflow-y: auto; padding: 5px; background: #f8f9fa; }
-        .dense-table { width: 100%; border-collapse: collapse; font-size: 10.5px; table-layout: fixed; }
-        .dense-table th { background: #ced4da; padding: 4px; text-align: right; border: 1px solid #adb5bd; position: sticky; top: 0; }
-        .dense-table td { padding: 3px 6px; border: 1px solid #dee2e6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .badge { padding: 1px 4px; border-radius: 2px; color: white; font-size: 9px; font-weight: bold; }
-        .bg-available { background: var(--success); } .bg-unavailable { background: var(--danger); }
-    </style>
-</head>
-<body>
-<div class="dashboard">
-    <header><h1>«·›Â—” «··Ì»Ì «·„ÊÕœ | ‰”Œ… «·”Õ«»… «··ÕŸÌ…</h1></header>
-    <div class="entry-section">
-        <div class="grid-container">
-            <div class="field-box w-title"><label>⁄‰Ê«‰ «·—”«·…</label><input type="text" id="f-title"></div>
-            <div class="field-box w-author"><label>«·»«ÕÀ</label><input type="text" id="f-author"></div>
-            <div class="field-box w-supervisor"><label>«·„‘—›</label><input type="text" id="f-supervisor"></div>
-            <div class="field-box w-uni"><label>«·Ã«„⁄…</label><select id="f-uni">
-                <option>Ã«„⁄… ÿ—«»·”</option>
-                <option>Ã«„⁄… »‰€«“Ì</option>
-                <option>Ã«„⁄… ”»Â«</option>
-                <option>Ã«„⁄… «·“«ÊÌ…</option>
-                <option>Ã«„⁄… „’—« …</option>
-            </select></div>
-            <div class="field-box w-dept"><label>«·ﬂ·Ì…/«·ﬁ”„</label><input type="text" id="f-dept"></div>
-            <div class="field-box w-year"><label>«·”‰…</label><input type="number" id="f-year" value="2026"></div>
-            <div class="field-box w-id"><label>—ﬁ„ «·—”«·…</label><input type="text" id="f-id"></div>
-            <div class="field-box w-degree"><label>«·œ—Ã…</label><select id="f-degree"><option>„«Ã” Ì—</option><option>œﬂ Ê—«Â</option></select></div>
-            <div class="field-box w-status"><label>«·Õ«·…</label><select id="f-status"><option value="„ Ê›—…">„ Ê›—…</option><option value="€Ì— „ Ê›—…">€Ì— „ Ê›—…</option></select></div>
-            <div class="btn-group">
-                <button class="btn-excel" id="btnExcel">«” Ì—«œ Excel</button>
-                <button class="btn-save" id="btnSave">Õ›Ÿ ·ÕŸÌ</button>
-            </div>
-        </div>
-    </div>
-    <div class="table-wrapper">
-        <table class="dense-table">
-            <thead><tr><th width="35px">—ﬁ„</th><th>«·⁄‰Ê«‰</th><th width="20%">«·»«ÕÀ/«·„‘—›</th><th width="15%">«·Ã«„⁄…/«·ﬁ”„</th><th width="60px">«·”‰…</th><th width="80px">«·Õ«·…</th></tr></thead>
-            <tbody id="results-body"></tbody>
-        </table>
-    </div>
-</div>
-
 <script>
-    // »Ì«‰«  «·—»ÿ «· Ì «” Œ—Ã‰«Â« „‰ «·’Ê— «·Œ«’… »ﬂ
     const firebaseConfig = {
       apiKey: "AIzaSyBU-Y2l1rrpAPOpDhEXI7WjwACx0LgZLX0",
       authDomain: "ltp-libya.firebaseapp.com",
       projectId: "ltp-libya",
       storageBucket: "ltp-libya.firebasestorage.app",
       messagingSenderId: "761649252036",
-      appId: "1:761649252036:web:96e615cae0a5584f3bab91",
-      measurementId: "G-RGHQRYE88H"
+      appId: "1:761649252036:web:96e615cae0a5584f3bab91"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ÊŸÌ›… Õ›Ÿ —”«·… Ê«Õœ… »‘ﬂ· ·ÕŸÌ
+    // ÿ≠ŸÅÿ∏ ŸÑÿ≠ÿ∏Ÿä - ÿ®ÿØŸàŸÜ ÿ™ŸÜÿ≤ŸäŸÑ ŸÖŸÑŸÅÿßÿ™
     document.getElementById('btnSave').onclick = async function() {
         const data = {
             title: document.getElementById('f-title').value,
@@ -88,69 +21,54 @@
             dept: document.getElementById('f-dept').value,
             year: document.getElementById('f-year').value,
             status: document.getElementById('f-status').value,
-            degree: document.getElementById('f-degree').value,
-            id: document.getElementById('f-id').value,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
-        if(!data.title || !data.author) return alert("Ì—ÃÏ ≈œŒ«· «·⁄‰Ê«‰ Ê«·»«ÕÀ ⁄·Ï «·√ﬁ·");
-        
+
+        if(!data.title || !data.author) return alert("ÿ£ÿØÿÆŸÑ ÿßŸÑÿ®ŸäÿßŸÜÿßÿ™ ÿßŸÑÿ£ÿ≥ÿßÿ≥Ÿäÿ©");
+
         try {
             await db.collection("theses").add(data);
-            alert(" „  «·≈÷«›… »‰Ã«Õ!");
-            //  ›—Ì€ «·Œ«‰«  «·√”«”Ì…
+            // ÿ•ŸÅÿ±ÿßÿ∫ ÿßŸÑÿÆÿßŸÜÿßÿ™ ŸÅŸàÿ±ÿßŸã ŸÑÿ™ÿ≥ŸáŸäŸÑ ÿßŸÑÿπŸÖŸÑ ÿßŸÑŸÖÿ™ÿ™ÿßÿ®ÿπ
             document.getElementById('f-title').value = '';
             document.getElementById('f-author').value = '';
-        } catch(e) { 
-            console.error(e);
-            alert("Œÿ√:  √ﬂœ „‰  ›⁄Ì· Cloud Firestore ›Ì Õ”«»ﬂ!"); 
-        }
+            document.getElementById('f-supervisor').value = '';
+            console.log("Data saved to Cloud");
+        } catch(e) { alert("ÿÆÿ∑ÿ£ ŸÅŸä ÿßŸÑÿßÿ™ÿµÿßŸÑ ÿ®ÿßŸÑÿ≥ÿ≠ÿßÿ®ÿ©"); }
     };
 
-    // «” Ì—«œ ≈ﬂ”· œ›⁄… Ê«Õœ…
+    // ÿßÿ≥ÿ™Ÿäÿ±ÿßÿØ ÿ•ŸÉÿ≥ŸÑ ÿØŸÅÿπÿ© Ÿàÿßÿ≠ÿØÿ© ŸÑŸÑÿ≥ÿ≠ÿßÿ®ÿ©
     document.getElementById('btnExcel').onclick = function() {
         const input = document.createElement('input');
         input.type = 'file'; input.accept = '.xlsx';
         input.onchange = e => {
             const reader = new FileReader();
             reader.onload = async ev => {
-                const workbook = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
-                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                
+                const rows = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(ev.target.result), {type:'array'}).Sheets[XLSX.read(new Uint8Array(ev.target.result), {type:'array'}).SheetNames[0]]);
                 const batch = db.batch();
                 rows.forEach(r => {
                     const ref = db.collection("theses").doc();
                     batch.set(ref, { 
-                        title: r['«·⁄‰Ê«‰'], author: r['«·»«ÕÀ'], supervisor: r['«·„‘—›']||'', 
-                        university: r['«·Ã«„⁄…'], dept: r['«·ﬂ·Ì…']||r['«·ﬁ”„']||'', 
-                        year: r['«·”‰…'], status: r['«·Õ«·…']||'„ Ê›—…',
+                        title: r['ÿßŸÑÿπŸÜŸàÿßŸÜ'], author: r['ÿßŸÑÿ®ÿßÿ≠ÿ´'], university: r['ÿßŸÑÿ¨ÿßŸÖÿπÿ©'], 
+                        year: r['ÿßŸÑÿ≥ŸÜÿ©'], status: r['ÿßŸÑÿ≠ÿßŸÑÿ©']||'ŸÖÿ™ŸàŸÅÿ±ÿ©',
                         timestamp: firebase.firestore.FieldValue.serverTimestamp() 
                     });
                 });
                 await batch.commit();
-                alert(" „ «” Ì—«œ " + rows.length + " —”«·… »‰Ã«Õ!");
+                alert("ÿ™ŸÖ ÿ±ŸÅÿπ " + rows.length + " ÿ±ÿ≥ÿßŸÑÿ© ŸÑŸÑÿ≥ÿ≠ÿßÿ®ÿ© ÿ®ŸÜÿ¨ÿßÿ≠!");
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         };
         input.click();
     };
 
-    // ⁄—÷ Ê ÕœÌÀ «·»Ì«‰«  ÕÌ« (Live Stream)
+    // ÿ™ÿ≠ÿØŸäÿ´ ÿßŸÑÿ¨ÿØŸàŸÑ ÿ≠ŸäÿßŸã
     db.collection("theses").orderBy("timestamp", "desc").onSnapshot(snapshot => {
         const tbody = document.getElementById('results-body');
         tbody.innerHTML = '';
         snapshot.docs.forEach((doc, i) => {
             const item = doc.data();
-            const statusClass = item.status === '„ Ê›—…' ? 'bg-available' : 'bg-unavailable';
-            tbody.insertAdjacentHTML('beforeend', `<tr>
-                <td style="text-align:center">${i+1}</td>
-                <td style="font-weight:bold" title="${item.title}">${item.title}</td>
-                <td>${item.author}<br><small>${item.supervisor||''}</small></td>
-                <td>${item.university}<br><small>${item.dept||''}</small></td>
-                <td style="text-align:center">${item.year}</td>
-                <td style="text-align:center"><span class="badge ${statusClass}">${item.status}</span></td>
-            </tr>`);
+            const statusClass = item.status === 'ŸÖÿ™ŸàŸÅÿ±ÿ©' ? 'bg-available' : 'bg-unavailable';
+            tbody.insertAdjacentHTML('beforeend', `<tr><td>${i+1}</td><td style="font-weight:bold">${item.title}</td><td>${item.author}</td><td>${item.university}</td><td>${item.year}</td><td><span class="badge ${statusClass}">${item.status}</span></td></tr>`);
         });
     });
 </script>
-</body>
-</html>
